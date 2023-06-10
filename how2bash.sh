@@ -85,7 +85,8 @@ println 1
 code_output "Here is input that will be printed to the screen. Press enter to run"
 println 2
 sleep 0.3
-print "\tHere we use 'echo' to print text to the screen followed by the text we want enclosed in double quotes"
+print "\tHere we use 'echo' to print text to the screen followed by the text we want enclosed in double quotes."
+print "\tIf we use single quotes, we can do literal strings and prevent variable and command substitution (this will be explained later)."
 println 1
 span
 next_section_prompt
@@ -1119,7 +1120,7 @@ code "grep 'bar' foo"
 code_output "barrier"
 span
 println 1
-print "\tMost of the time, you should either be using '>' or passing the filename to the program."
+print "\tMost of the time, you should either be using '<' or passing the filename to the program."
 println 1
 press_continue
 println 2
@@ -1228,4 +1229,4 @@ span
 code "mapfile -t array < <(cmd)"
 span
 println 1
-print "\tAre the same."
+print "\tThese are the same."
