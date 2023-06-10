@@ -13,7 +13,7 @@ done
 if [[ ${1} == "-p" ]]; then SPEED=1; fi
 
 function print() {
-    if command -v pv &>/dev/null && [[ -z $SPEED ]]; then
+    if command -v pv &> /dev/null && [[ -z $SPEED ]]; then
         echo -e "${@}" | pv -qL "${speed}"
     else
         echo -e "${@}"
@@ -21,7 +21,7 @@ function print() {
 }
 
 function print_no_line() {
-    if command -v pv &>/dev/null && [[ -z $SPEED ]]; then
+    if command -v pv &> /dev/null && [[ -z $SPEED ]]; then
         echo -ne "${@}" | pv -qL "${speed}"
     else
         echo -ne "${@}"
@@ -30,7 +30,7 @@ function print_no_line() {
 
 function println() {
     local i
-    for (( i = 0; i < ${1}; i++)); do
+    for ((i = 0; i < ${1}; i++)); do
         echo
     done
 }
@@ -50,7 +50,7 @@ function code_output() {
 function display_center() {
     local line
     while IFS= read -r line; do
-        printf "%*s\n" $(( (${#line} + COLUMNS) / 2)) "${line}"
+        printf "%*s\n" $(((${#line} + COLUMNS) / 2)) "${line}"
     done <<< "${1}"
 }
 
@@ -61,7 +61,7 @@ function next_section_prompt() {
 function countdown() {
     for i in $(seq "${1}" -1 1); do
         echo -ne "\rStarting in $i "
-        sleep 1 
+        sleep 1
     done
 }
 
@@ -134,7 +134,7 @@ print "\tArithmetic substitution evaluates math into a variable. One thing to no
 println 1
 span
 code "num=256"
-code "echo \$((num + 4))"
+code 'echo $((num + 4))'
 code_output "260"
 span
 println 1
@@ -180,15 +180,15 @@ print "\tTo make things more complicated, string splitting doesn't just happen o
 print "\tIt can happen after parameter expansion!!"
 println 1
 span
-code "sentence=\"Push that word         away from me.\""
-code "echo \${sentence}"
+code 'sentence="Push that word         away from me."'
+code 'echo ${sentence}'
 code_output "Push that word away from me."
 span
 println 1
 print "\tWe're smarter than this though, so let's add those double quotes to the variable."
 println 1
 span
-code "echo \"\${sentence}\""
+code 'echo "${sentence}"'
 code_output "Push that word         away from me."
 span
 println 1
@@ -227,8 +227,8 @@ print "\tOk... So what about when we do need to split strings?"
 print "\tIn this next example, we will use a for loop, which we will discuss later, but hopefully you can follow."
 println 1
 span
-code "friends=\"Lily Oren AJ Sourajyoti\""
-code "for friend in \${friends}; do"
+code 'friends="Lily Oren AJ Sourajyoti"'
+code 'for friend in ${friends}; do'
 print "\t\t> echo \"\${friend} is my friend\"; done"
 for i in {Lily,Oren,AJ,Sourajyoti}; do
     code "${i} is my friend"
@@ -257,7 +257,7 @@ println 1
 print "\tLet's try interacting with it like it's a variable first, which will print the first element:"
 println 1
 span
-code "echo \${names}"
+code 'echo ${names}'
 code_output "Lily"
 span
 println 1
@@ -272,15 +272,15 @@ print "\tWhen we use it, it will print the entire array. If we quote the array, 
 print "\tIf we do not quote, it will act like multiple arguments."
 println 1
 span
-code "names=(\"John           Doe\" \"Jane    Doe\")"
-code "echo \${names[*]}"
+code 'names=("John           Doe" "Jane    Doe")'
+code 'echo ${names[*]}'
 code_output "John Doe Jane Doe"
 span
 println 1
 print "\tLet's try quoting it now:"
 println 1
 span
-code "echo \"\${names[*]}\""
+code 'echo "${names[*]}"'
 code_output "John           Doe Jane    Doe"
 span
 println 1
@@ -293,9 +293,9 @@ print "\tIf that's confusing, we'll walk through an example of how bash would \"
 println 1
 span
 code "perls=(perl-one perl-two)"
-code "echo \"\${perls[*]}\""
+code 'echo "${perls[*]}"'
 code_output "perl-one perl-two"
-code "echo \"\${perls[@]}\""
+code 'echo "${perls[@]}"'
 code_output "perl-one perl-two"
 span
 println 1
@@ -303,13 +303,13 @@ print "\tDid you catch it? Probably not, because bash didn't show you what it wa
 print "\tIn the unquoted subscript, 'echo' was being passed this string:"
 println 1
 span
-code "echo \"perl-one perl-two\""
+code 'echo "perl-one perl-two"'
 span
 println 1
 print "\tAnd in the quoted subscript it was being passed this:"
 println 1
 span
-code "echo \"perl-one\" \"perl-two\""
+code 'echo "perl-one" "perl-two"'
 span
 println 1
 print "\tPretty neat huh?"
@@ -324,8 +324,8 @@ code "perls=(perl-one perl-two perl-three perl-four)"
 print_no_line "\t\t\$ declare -p perls"
 read -n 1 -s -r
 println 1
-code_output "declare -a perls=([0]=\"perl-one\" [1]=\"perl-two\" [2]=\"perl-three\" [3]=\"perl-four\")"
-code "echo \"\${perls[2]}\""
+code_output 'declare -a perls=([0]="perl-one" [1]="perl-two" [2]="perl-three" [3]="perl-four")'
+code 'echo "${perls[2]}"'
 code_output "perl-three"
 span
 println 1
@@ -356,13 +356,13 @@ span
 print_no_line "\t\t\$ declare -p perls"
 read -n 1 -s -r
 println 1
-code_output "declare -a perls=([0]=\"perl-one\" [2]=\"perl-three\" [3]=\"perl-four\")"
+code_output 'declare -a perls=([0]="perl-one" [2]="perl-three" [3]="perl-four")'
 span
 println 1
 print "\tNow what we *could* do to shift the array is by reassigning perls to perls:"
 println 1
 span
-code "perls=(\"\${perls[@]}\")"
+code 'perls=("${perls[@]}")'
 span
 println 1
 print "\tThis should be familiar. If we were to use [*] instead, what would it do?"
@@ -374,9 +374,11 @@ options=(
 select num in "${options[@]}"; do
     case "${num}" in
         "Split every element into a new argument")
-            print "\tYou are incorrect." && break ;;
+            print "\tYou are incorrect." && break
+            ;;
         "Split array into one argument")
-            print "\tYou are correct!" && break ;;
+            print "\tYou are correct!" && break
+            ;;
         *) echo "Invalid option ${REPLY}" ;;
     esac
 done
@@ -386,7 +388,7 @@ print "\tLet's move onto associative arrays."
 print "\tThese are useful when you want to have known indices:"
 println 1
 span
-code "declare -A capitals=([US]=\"Washington DC\" [Spain]=\"Madrid\" [India]=\"New Delhi\")"
+code 'declare -A capitals=([US]="Washington DC" [Spain]="Madrid" [India]="New Delhi")'
 code "echo \"\${capitals['Spain']}\""
 code_output "Madrid"
 code "echo \"\${capitals['India']}\""
@@ -402,7 +404,7 @@ code "nums=(1 2 3 4)"
 print_no_line "\t\t\$ nums+=(5)"
 read -n 1 -s -r
 println 1
-code "echo \"\${nums[*]}\""
+code 'echo "${nums[*]}"'
 code_output "1 2 3 4 5"
 span
 println 1
@@ -536,7 +538,7 @@ span
 print "\t\tfunction multiply_five() {"
 print "\t\t  echo \$((\${1} * 5))"
 print "\t\t}"
-code "output=\"\$(multiply_five 5)\""
+code 'output="$(multiply_five 5)"'
 span
 println 1
 print "\tNow that's weird... Didn't you say that we don't need variable expansion in arithmetic substitution? And why is the number '1' a variable???"
@@ -588,10 +590,10 @@ print "\tNow if we run:"
 println 1
 span
 code "is_even 10"
-code "echo \$?"
+code 'echo $?'
 code_output "0"
 code "is_even 11"
-code "echo \$?"
+code 'echo $?'
 code_output "1"
 span
 println 1
@@ -658,17 +660,17 @@ print "\t\t  - Commands               : grep, find, etc"
 println 1
 print "\tConditionals are the hardest and **most** powerful part of bash, right after parameter expansion, so pay attention:"
 println 1
-code "[[ \${var} == \"string\" ]] # Equal to string"
-code "[[ \${var} != \"string\" ]] # Not equal to string"
-code "[[ \${var} =~ regex ]]    # Equal to regex"
-code "[[ \${var} < \"string\" ]]  # Var sorts before string lexicographically"
-code "[[ \${var} > \"string\" ]]  # Var sorts after string lexicographically"
-code "[[ \${var} -eq num ]]     # Equal to number"
-code "[[ \${var} -ne num ]]     # Not equal to number"
-code "[[ \${var} -lt num ]]     # Less than number"
-code "[[ \${var} -gt num ]]     # Greater than number"
-code "[[ \${var} -ge num ]]     # Greater or equal to number"
-code "[[ \${var} -le num ]]     # Less than or equal to number"
+code '[[ ${var} == "string" ]] # Equal to string'
+code '[[ ${var} != "string" ]] # Not equal to string'
+code '[[ ${var} =~ regex ]]    # Equal to regex'
+code '[[ ${var} < "string" ]]  # Var sorts before string lexicographically'
+code '[[ ${var} > "string" ]]  # Var sorts after string lexicographically'
+code '[[ ${var} -eq num ]]     # Equal to number'
+code '[[ ${var} -ne num ]]     # Not equal to number'
+code '[[ ${var} -lt num ]]     # Less than number'
+code '[[ ${var} -gt num ]]     # Greater than number'
+code '[[ ${var} -ge num ]]     # Greater or equal to number'
+code '[[ ${var} -le num ]]     # Less than or equal to number'
 println 1
 print "\tEvery single right side argument can be a variable as well. We don't have to quote the left hand argument, but we need to for the right side if we use a variable. We can even use globs (*) on string operations."
 print "\tLet's take a breather, because we're not done yet with conditionals :)"
@@ -680,9 +682,9 @@ print "\tI'll print every single flag conditional, but I'll separate the most us
 println 1
 print "\t String and file/directory flags (most commonly used)"
 println 1
-code "[[ -n \${var} ]]          # If string length is non-zero"
+code '[[ -n ${var} ]]          # If string length is non-zero'
 code "[[ -v varname ]]         # If varname is set"
-code "[[ -z \${var} ]]          # If string length is zero"
+code '[[ -z ${var} ]]          # If string length is zero'
 code "[[ -f file ]]            # If regular file exists"
 code "[[ -d dir ]]             # If directory exists"
 println 1
@@ -701,7 +703,7 @@ code "[[ -u file ]]            # If file exists and has set-user-id bit set"
 code "[[ -w file ]]            # If file exists and is writable"
 code "[[ -x file ]]            # If file exists and is executable"
 code "[[ -G file ]]            # If file exists and is owned by effective group ID"
-code "[[ -N file ]]            # If file exists and has been modified since last read" 
+code "[[ -N file ]]            # If file exists and has been modified since last read"
 code "[[ -O file ]]            # If file exists and is owned by effective user ID"
 code "[[ -S file ]]            # If file exists and is socket"
 println 1
@@ -727,10 +729,10 @@ print "\tFinally we have command conditionals, which are very simple. For exampl
 println 1
 span
 code "if ping 1.1.1.1 -c1 > /dev/null; then"
-print "\t\t>   echo \"We pinged cloudflare!\"" 
+print "\t\t>   echo \"We pinged cloudflare!\""
 print "\t\t>   exit 0"
 print "\t\t> else"
-print "\t\t>   echo \"We failed!!!\"" 
+print "\t\t>   echo \"We failed!!!\""
 print "\t\t>   exit 1"
 print "\t\t> fi"
 span
@@ -764,7 +766,7 @@ println 2
 print "\tCase statments come in a couple forms:"
 println 1
 span
-code "case \"\${variable}\" in"
+code 'case "${variable}" in'
 print "\t\t>   match) # Equals"
 print "\t\t>     [COMMANDS]"
 print "\t\t>   ;; # End of match. Same as 'break' in C"
@@ -881,19 +883,19 @@ print "\tLet's think about this logically: if '2>' moves stderr to a stdout, how
 println 1
 read -n 1 -s -r -p $'\tWhen you think of a solution, press any character to continue'
 println 1
-print "\tYou probably thought '>2', and you'd be correct! However, that really doesn't do us much good if we want to inform the user of an error."
+print "\tYou probably thought '>2', and you'd be correct! However, that really doesn't do us much good if we want to inform the user of an error if they can't see stderr."
 print "\tWhat most programs do is merge stderr with stdout, and in bash that's accomplished by making a copy of stderr, and pushing that to stdout."
 print "\tWe use this with the '&' character, when used alongside a redirect, will merge a file descriptor stream into another one:"
 println 1
 span
-code "echo \"error\" >&2"
+code 'echo "error" >&2'
 span
 println 1
 print "\tThis merges stdout (1, but this is implicit) into stderr (2) and prints the whole thing out."
 print "\tAll this will finally show 1 stream to the user (stdout), but 2 behind the scenes (stdout+stderr)."
 print "\tThis is probably the hardest part to conceptualize, so let's use a graph:"
 println 1
-print "        echo \"error\"        >&2           ---
+print '        echo "error"        >&2           ---
           |                  |  |------> ( 2 )
           v                  |  |         ---
          ---                 v  |
@@ -901,7 +903,7 @@ print "        echo \"error\"        >&2           ---
          ---                    |
                                 |         ---
                                 |------> ( 1 )
-                                          ---"
+                                          ---'
 println 1
 print "\tSo that's how we print stdout and stderr while maintaining a copy of stderr. What if we don't want stderr at all? I want *everything* to go to stdout!"
 print "\tThis can be accomplished with '2>&1'. We merge stderr (2) with stdout (1), and that all is printed to stdout."
@@ -1027,13 +1029,13 @@ print "\tNext we'll do splicing:"
 println 1
 span
 code "string=01234567890abcdefgh"
-code "echo \${string:7}"
+code 'echo ${string:7}'
 code_output "7890abcdefgh"
-code "echo \${string:7:2}"
+code 'echo ${string:7:2}'
 code_output "78"
-code "echo \${string:7:-2}"
+code 'echo ${string:7:-2}'
 code_output "7890abcdef"
-code "echo \${string: -7}"
+code 'echo ${string: -7}'
 code_output "bcdefgh"
 code "# We had to add a space to a negative offset to avoid bash getting confused with :- expansion."
 span
@@ -1072,7 +1074,7 @@ println 1
 print "\tWow... That looks really bad. Now if you're running ls >= 8.25, it will correctly escape filenames when printing to a terminal, but not in a script:"
 println 1
 span
-code "for f in \$(ls); do"
+code 'for f in $(ls); do'
 print "\t\t> echo \"file: \${f}\""
 print "\t\t> done"
 print "\t\tfile: '
@@ -1127,7 +1129,7 @@ println 2
 print "\tNext we have looping over file contents with cat:"
 println 1
 span
-code "for line in \$(cat file); do echo \"\${line}\"; done"
+code 'for line in $(cat file); do echo "${line}"; done'
 span
 println 1
 print "\tIf you do this on a file that contains any spacing, it will all be subjected to string splitting, and quoting the subshell will pass the contents as one argument."
@@ -1165,7 +1167,7 @@ print "\tNow we'll do looping through unquoted subscript arrays. This should be 
 println 1
 span
 code "array=('foo bar' 'baz' 'ba ng le')"
-code "for var in \${array[*]}; do"
+code 'for var in ${array[*]}; do'
 print "\t\t>   echo \"\${var}\""
 print "\t\t> done"
 print "\t\tfoo
@@ -1180,7 +1182,7 @@ print "\tThe solution is to use quoted subscript arrays:"
 println 1
 span
 code "array=('foo bar' 'baz' 'ba ng le')"
-code "for var in \"\${array[@]}\"; do"
+code 'for var in "${array[@]}"; do'
 print "\t\t>   echo \"\${var}\""
 print "\t\t> done"
 print "\t\tfoo bar
@@ -1193,7 +1195,7 @@ println 2
 print "\tLastly we have raw commands into an array:"
 println 1
 span
-code "array=(\$(cmd))"
+code 'array=($(cmd))'
 span
 println 1
 print "\tThis will incur string splitting on all whitespace, even ones in quotes, and will trigger globs if they exist."
