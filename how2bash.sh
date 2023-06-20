@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 tabs -4
 
@@ -1232,3 +1232,99 @@ code "mapfile -t array < <(cmd)"
 span
 println 1
 print "\tThese are the same."
+span
+println 1
+span
+next_section_prompt
+
+# 2.1
+clear
+span
+display_center "[ 2.1 CREATING A PROGRAM ]"
+println 2
+print "\tIn this chapter we will be creating our own cat program, complete with flags!"
+print "\tFirst thing we need to do is familiarize ourselves with a builtin called 'getopts'."
+print "\tIt's job is to parse flags and input passed to your program. Let's look at how 'getopts' works:"
+println 1
+span
+code "while getopts 'flags' OPTION; do"
+print "\t\t>   case \"\${OPTION}\" in"
+print "\t\t>     F) [COMMANDS] ;;"
+print "\t\t>     ?) [ERROR HERE] && [return/exit] 1 ;;"
+print "\t\t>   esac"
+print "\t\t> done"
+print "\t\t> shift \$((OPTIND - 1))"
+span
+println 1
+print "\tAlright, so the first thing we have to deal with is 'flags'."
+print "\tWe fill it with one letter flags, so if we want to have '-t', we'd add 't' to it."
+print "\tBut that's not all we can do. Suppose we have the flagset 'hv:t::':"
+println 1
+print "\t\t - 'h' has no parameters"
+print "\t\t - 'v:' has a mandatory parameter"
+print "\t\t - 't::' has an optional parameter"
+println 1
+print "\tWe could put a colon at the very beginning of 'flags' to silence 'getopts' errors in place of your own if you wish."
+println 1
+print "\tlast we have that shift command. This will shift the arguments to start at everything that 'getopts' doesn't parse:"
+println 1
+span
+code "foo -p 50 -c -t bar bazzle bizzle"
+span
+println 1
+print "\tThe shift part will shift so that your command arguments look like: bar bazzle bizzle"
+println 1
+print "\tSo now that we have a basic understanding of 'getopts', lets begin on our program. Try to work ahead if you can."
+println 1
+press_continue
+println 2
+print "\tWe should start with a shebang, which allows us to run a program without specifying what interpreter to run:"
+println 1
+span
+print "\t\t#!/usr/bin/env bash"
+span
+println 1
+print "\tNext, we'll start on our 'getopts' stuff. We'll have two flags, a help flag and a -E flag, which will display '\$' at the end of every line."
+print "\tThe -h flag and the -E flag will be optional, so what should the next line be?"
+PS3="What will the next line be?: "
+options=(
+    "getopts 'h:E:'"
+    "getopts 'hE'"
+    "getopts 'hE:'"
+    "getopts 'h:E'"
+)
+select num in "${options[@]}"; do
+    case "${num}" in
+        "getopts 'h:E:'") print "\tYou are incorrect." && break ;;
+        "getopts 'hE'") print "\tYou are correct." && break ;;
+        "getopts 'hE:'") print "\tYou are incorrect." && break ;;
+        "getopts 'h:E'") print "\tYou are incorrect." ;;
+        *) echo "Invalid option ${REPLY}" ;;
+    esac
+done
+print "\tBoth -h and -E should *not* use any arguments."
+println 1
+span
+print "\t\t#!/usr/bin/env bash"
+print "\t\twhile getopts 'hE' OPTION; do"
+span
+println 1
+print "\tNext let's consider our case statement. If the -h flag is ran, no matter what other flags are passed, we print the help page."
+print "\tAnd for the -E flag, let's just set a variable to say that we want to trigger this end of line character."
+press_continue
+println 2
+print "\tWe want to add -h to a match along with the catch-all at the end, and -E goes to it's own match:"
+println 1
+span
+print "\t\t#!/usr/bin/env bash"
+print "\t\twhile getopts 'hE' OPTION; do"
+print "\t\t  case \"\${OPTION}\" in"
+print "\t\t    E) ending=true"
+print "\t\t    h | ?) Usage: cat [-E] files >&2 && exit 1 ;;"
+print "\t\t  esac"
+print "\t\tdone"
+print "\t\t> shift \$((OPTIND - 1))"
+span
+println 1
+press_continue
+println 1
