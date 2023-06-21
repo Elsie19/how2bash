@@ -231,7 +231,7 @@ code 'friends="Lily Oren AJ Sourajyoti"'
 code 'for friend in ${friends}; do'
 print "\t\t> echo \"\${friend} is my friend\"; done"
 for i in {Lily,Oren,AJ,Sourajyoti}; do
-    code "${i} is my friend"
+    print "\t\t${i} is my friend"
 done
 span
 println 1
